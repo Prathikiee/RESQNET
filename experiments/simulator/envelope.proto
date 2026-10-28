@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package resqnet.wire.v1;
+
+// RESQNET Message Envelope Specification (DEC-06 Candidate)
+// Reference: docs/wire-protocol-v1.md Section 3.1 & Section 3.2
+//
+// Design Rationale:
+// - Fields 1 through 13 use 1-byte tags (tags 1..15 require only 1 byte on the wire).
+// - All cryptographic binary fields use native 'bytes' to eliminate Base64 expansion (~33%).
+// - Integer types match wire protocol definitions (uint32 for 8/16-bit fields, uint64 for timestamps).
+message MessageEnvelope {
+  // Wire protocol version (Proposed value: 1)
+  uint32 protocol_version = 1;
+
+  // Unique message identifier for DTN deduplication (16 bytes binary UUID)
+  bytes message_id = 2;
+
+  // Originating node Ed25519 public key for authenticity verification (32 bytes binary)
+  bytes sender_identity = 3;
+
+  // Origination timestamp in UTC epoch milliseconds
+  uint64 creation_time = 4;
+
+  // Absolute expiration timestamp in UTC epoch milliseconds for DTN queue eviction
+  uint64 ttl_expiry = 5;
+
+  // Forwarding priority tier: 0=Routine, 1=Urgent, 2=Critical
+  uint32 priority = 6;
+
+  // Coarse category hint for relay routing (uint8 enum) [OPEN - DEC-14]
+  uint32 coarse_category = 7;
+
+  // Location availability flag: 0=Available, 1=Unavailable
+  uint32 location_flag = 8;
+
+  // AES-256-GCM initialization vector / nonce (12 bytes binary) [OPEN - DEC-04]
+  bytes nonce_iv = 9;
+
+  // AES-256-GCM authentication tag (16 bytes binary)
+  bytes auth_tag = 10;
+
+  // Ed25519 digital signature over canonical envelope fields (64 bytes binary)
+  bytes signature = 11;
+
+  // Target gateway/backend key identifier (8 bytes binary / ASCII)
+  bytes recipient_key_id = 12;
+
+  // AES-256-GCM encrypted confidential incident payload (ciphertext bytes)
+  bytes encrypted_payload = 13;
+}

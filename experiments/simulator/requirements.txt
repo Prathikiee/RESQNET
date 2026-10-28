@@ -1,0 +1,11 @@
+# Dependencies for RESQNET DEC-06 Wire Serialization Benchmark
+# Compatible with Python 3.12+
+
+# CBOR serialization library supporting canonical encoding (RFC 8949)
+cbor2>=5.6.0
+
+# Protocol Buffers runtime
+protobuf>=4.25.0
+
+# Protocol Buffers compiler tool for generating Python stubs from .proto
+grpcio-tools>=1.62.0
